@@ -159,6 +159,8 @@ def test_LFS_direction(lf_datax,y_return,y_cross,var,seq,epoch):
 
     return lfs_direction_predict
 
+
+
 def test_LFS_return(data,y_return,y_cross,var,seq,epoch):
 
     lis=range(len(index1))
@@ -207,6 +209,8 @@ def test_LFS_return(data,y_return,y_cross,var,seq,epoch):
     lfm_return_predict=model.predict(test_x)
     print("test evaluate",model.evaluate(test_x,test_y_return))
     return lfm_return_predict
+
+
 
 def test_LFM(data,y_return,y_cross,var,seq,epoch):
 
