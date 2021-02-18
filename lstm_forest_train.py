@@ -138,7 +138,6 @@ def test_LFS_direction(lf_datax,y_return,y_cross,var,seq,epoch):
     
     main_input = Input(shape=(seq,var),name='main_input')
     m=LSTM(15,return_sequences=False,kernel_regularizer=l2(0.01))(main_input)
-    
     m=Dense(30,activation='relu',kernel_initializer='glorot_normal')(m)
     m=Dense(30,activation='relu',kernel_initializer='glorot_normal')(m)
     m=Dense(30,activation='relu',kernel_initializer='glorot_normal')(m)
@@ -188,7 +187,6 @@ def test_LFS_return(data,y_return,y_cross,var,seq,epoch):
 
     main_input = Input(shape=(seq,var),name='main_input')
     m=LSTM(15,return_sequences=False)(main_input)
-
     m=Dense(30,activation='relu',kernel_initializer='glorot_normal')(m)
     m=Dense(30,activation='relu',kernel_initializer='glorot_normal')(m)
     m=Dense(30,activation='relu',kernel_initializer='glorot_normal')(m)
@@ -222,7 +220,6 @@ def test_LFM(data,y_return,y_cross,var,seq,epoch):
     callbacks_list = [lr]
     section=int(lf_datax.shape[0]*0.8)
 
-
     y_cross, y_return =y_cross[seq-1:], y_return[seq-1:]
     train_x2, test_x, train_y_cross2, train_y_return2,test_y_cross,test_y_return =lf_datax[:section,:,:], lf_datax[section:,:,:], y_cross[:section], y_return[:section],y_cross[section:],y_return[section:]
   
@@ -237,13 +234,11 @@ def test_LFM(data,y_return,y_cross,var,seq,epoch):
     K.clear_session() 
     main_input = Input(shape=(seq,var),name='main_input')
     m=LSTM(15,return_sequences=False)(main_input)
-    
     m=Dense(30,activation='relu',kernel_initializer='glorot_normal')(m)
     m=Dense(30,activation='relu',kernel_initializer='glorot_normal')(m)
     m=Dense(30,activation='relu',kernel_initializer='glorot_normal')(m)
     m=Dropout(0.3)(m)
     
-
     main_cross=Dense(30,activation='relu',kernel_initializer='glorot_normal')(m)
     main_cross=Dense(30,activation='relu',kernel_initializer='glorot_normal')(main_cross)
     main_cross=Dropout(0.3)(m)
@@ -264,13 +259,17 @@ def test_LFM(data,y_return,y_cross,var,seq,epoch):
     # model evaluation
     lfm_predict=model.predict(test_x)
     print("test evaluate",model.evaluate(test_x,[test_y_cross,test_y_return]))
-    return lfm_predict
-
-    #If you want to verify the index, train prediction
+    
+    
+    # verify the index, train prediction
     """
     lfm_train_predict=model.predict(train_x)
     return lfm_predict, index, lfm_train_predict
     """
+    
+    return lfm_predict
+
+
 
 
 
