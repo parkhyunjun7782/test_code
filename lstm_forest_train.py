@@ -88,12 +88,12 @@ def step_decay(epoch):
     lrate = initial_rate
     if epoch >= step_epoch:
         lrate = initial_rate*drop_rate
-    elif epoch >=step_epoch*2:
-        lrate = lrate*drop_rate**2
-    elif epoch >=step_epoch*3:
-        lrate = lrate*drop_rate**3
-    elif epoch >=step_epoch*4:
-        lrate = lrate*drop_rate**4
+    if epoch >=step_epoch*2:
+        lrate = initial_rate*drop_rate**2
+    if epoch >=step_epoch*3:
+        lrate = initial_rate*drop_rate**3
+    if epoch >=step_epoch*4:
+        lrate = initial_rate*drop_rate**4
     lrList.append(lrate)
     return lrate
 
