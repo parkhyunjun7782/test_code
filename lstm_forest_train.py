@@ -240,7 +240,7 @@ def test_LFM(data,y_return,y_cross,var,seq,epoch):
 
     main_cross=Dense(30,activation='relu',kernel_initializer='glorot_normal')(m)
     main_cross=Dense(30,activation='relu',kernel_initializer='glorot_normal')(main_cross)
-    main_cross=Dropout(0.3)(m)
+    main_cross=Dropout(0.3)(main_cross)
     main_cross=Dense(2,activation='softmax',name='main_cross')(main_cross)
 
     main_return=Dense(30,activation='relu',kernel_initializer='glorot_normal')(m)
