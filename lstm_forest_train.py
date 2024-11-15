@@ -15,39 +15,43 @@ from keras.layers.merge import concatenate
 import keras.backend as K
 from tensorflow.python.client import device_lib
 
-get_ipython().run_line_magic('matplotlib', 'inline')
-os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"   
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
+# Ensure TensorFlow uses a limited portion of the GPU to prevent memory errors
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-config =tf.ConfigProto()
-config.gpu_options.per_process_gpu_memory_fraction=0.35
-session=tf.Session(config=config)
+config = tf.ConfigProto()
+config.gpu_options.per_process_gpu_memory_fraction = 0.35
+session = tf.Session(config=config)
 
-def create_timestep(dataset,n):
-    dataX= []
-    for i in range(len(dataset)-n+1):
-        a = dataset[i:(i+n)]
+# Helper function to create timestep sequences from data
+def create_timestep(dataset, n):
+    dataX = []
+    for i in range(len(dataset) - n + 1):
+        a = dataset[i:(i + n)]
         dataX.append(a)
     return np.array(dataX)
-def count(data):  
-    c0=0
-    c1=0
+
+# Function to count occurrences of each label
+def count(data):
+    c0, c1 = 0, 0
     for i in range(len(data)):
-        if np.argmax(data[i])==0:
-            c0=c0+1
-        elif np.argmax(data[i])==1:
-            c1=c1+1
-    return c0,c1
+        if np.argmax(data[i]) == 0:
+            c0 += 1
+        elif np.argmax(data[i]) == 1:
+            c1 += 1
+    return c0, c1
+
+# Function to label the data based on the highest value
 def label(data):
-    k=[]
+    k = []
     for i in range(len(data)):
-        if np.argmax(data[i])==0:
+        if np.argmax(data[i]) == 0:
             k.append(0)
-        elif np.argmax(data[i])==1:
+        elif np.argmax(data[i]) == 1:
             k.append(1)
     return np.array(k)
 
-# data load
+# Load stock data from Excel file
 snp_raw=pd.read_excel("C:/Users/snp_data.xlsx",sheet_name='Sheet1',header=0)
 #sse_raw=pd.read_excel("C:/Users/sse_data.xlsx",sheet_name='Sheet1',header=0)
 #kos_raw=pd.read_excel("C:/Users/kos_data.xlsx",sheet_name='Sheet1',header=0)
@@ -62,7 +66,7 @@ snp_return,snp_direction=np.array(snp_raw['return']),np.array(snp_raw.iloc[:,-2:
 #sse_return,sse_direction=np.array(sse_raw['return']),np.array(sse_raw.iloc[:,-2:])
 #kos_return,kos_direction=np.array(kos_raw['return']),np.array(kos_raw.iloc[:,-2:])
 
-
+# Variables and parameters used for training
 stock_lst=['snp']
 #stock_lst=['snp','sse','kos']
 sequence=[50]
@@ -80,10 +84,13 @@ for i in range(len_stock): # snp, sse, kos
         setattr(mod, 'lfm_{}_var{}_se{}'.format(stock_lst[i],variable[v],sequence[s]), [])
 
         
-drop_rate=0.5
-initial_rate=0.001
-step_epoch=50
+# Learning rate and decay parameters for training
+drop_rate = 0.5
+initial_rate = 0.001
+step_epoch = 50
 lrList = []
+
+# Function to implement step decay for learning rate
 def step_decay(epoch):
     lrate = initial_rate
     if epoch >= step_epoch:
@@ -97,7 +104,7 @@ def step_decay(epoch):
     lrList.append(lrate)
     return lrate
 
-
+# Function to create the LSTM data for the LSTM-Forest model
 def lstm_forest_model(var,index,data,seq):
     for i in range(var):
         if i==0:
@@ -109,7 +116,7 @@ def lstm_forest_model(var,index,data,seq):
      return lf_datax
         
 
-
+# Function to create, train, and evaluate an LSTM-Forest Direction model
 def test_LFS_direction(lf_datax,y_return,y_cross,var,seq,epoch):
    
     lis=range(len(index1))
@@ -269,11 +276,6 @@ def test_LFM(data,y_return,y_cross,var,seq,epoch):
     
     return lfm_predict
 
-
-
-
-
-
 # ensamble LSTM-Forest
 epoch=300
 for L in range(100): #number of the LSTM
@@ -285,10 +287,7 @@ for L in range(100): #number of the LSTM
             getattr(mod,'lfs_return_snp_var{}_se{}'.format(variable[v],sequence[s])).append(test_LFS_return(snp_x,snp_y1,snp_y2,variable[v],sequence[s],epoch=epoch))
 
 
-
-
-# save lstm forest 
-
+# Save results to pickle file
 #with open('lfm_sse_test.pkl', 'wb') as fout:                    
 #with open('lfm_kos_test.pkl', 'wb') as fout:                    
 with open('lfm_snp_test.pkl', 'wb') as fout:
